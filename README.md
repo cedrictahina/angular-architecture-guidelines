@@ -1,3 +1,4 @@
+
 <h1 align="center">
 <img width="40" valign="bottom" src="https://angular.io/assets/images/logos/angular/angular.svg">
 Angular Architecture Guidelines
@@ -31,7 +32,7 @@ The topics that will be covered are:
 	- Purpose of state management
 	- Unidirectional data-flow
 	- NgRx
-	- NgRx Effects
+	- Store directory structure
 - Additional references / tips
 	- Linter (Ts Lint , HTML Hint, StyleLint)
 	- Typescript Configuration
@@ -155,3 +156,67 @@ In the other hand, there are  the **Dumb components**  (aka Presentational Compo
 - to display UI element and data
 - to delegate user interaction “up” to the smart components via events
 
+## State management
+
+### Purpose of state management
+
+A classic challenge found while building large front-end application is keeping different parts of the UI synchronised.
+Usually, changes performed in the state need to be reflected in different components, and as the application grows this complexity can only increase.
+With large application, we should have a proper way of handling the state and regarding the way we will manage it, the abstraction layer will make our components independent of the state management solution.
+
+The main goal would be to have **data consistency** across the application and have an architecture that would be less prone to bugs and easy to refactor and maintain. 
+
+### Unidirectional data-flow
+
+Angular itself uses unidirectional data flow on presentation level (via input bindings), so we should impose a similar restriction on the architecture level.
+The idea would be to provide high-level components ( containers ) the state and pass it down to the presentation. Containers are given Observables with data to display on the dumb components.
+To manage our state we can pick any state management library that supports RxJS (like  NgRx) or simply use BehaviorSubjects to model our state.
+
+The state will be propagated to multiple components and shown in multiple places, but will never be modified locally. The changes will only come from the state and the components will only reflect the state in the UI.
+This way we will have the state object as  **the single source of truth**.
+
+### NgRx
+Source: [https://ngrx.io/docs](https://ngrx.io/docs)
+
+NgRx is a framework for building reactive applications in Angular. NgRx provides state management, isolation of side effects, entity collection management, router bindings, code generation, and developer tools that enhance developers experience when building many different types of applications.
+
+ Core Principles :
+-   State is a single, immutable data structure.
+-   Components delegate responsibilities to side effects, which are handled in isolation.
+-   Type-safety is promoted throughout the architecture with reliance on TypeScript's compiler for program correctness.
+-   Actions and state are serializable to ensure state is predictably stored, rehydrated, and replayed.
+-   Promotes the use of functional programming when building reactive applications.
+-   Provide straightforward testing strategies for validation of functionality.
+
+### Store directory structure
+
+We can find below naming conventions, and a skeleton of how an NgRx based project should be structured according to the Angular/NgRx guidelines: 
+
+```
+|-- store (A specific folder that should be put in each feature module )
+|   |-- actions ( will hold all the NgRx actions related to the feature)
+|	|	|-- index.ts ( exports all actions as an es6 module )
+|	|	|-- example-one.action.ts
+|	|	|-- example-two.action.ts
+|   |-- reducers ( Will hold all the functions that will be in charge of mutating the state )
+|	|	|-- index.ts ( exports all reducer as an es6 module)
+|	|	|-- example-one.reducer.ts
+|	|	|-- example-two.reducer.ts
+|	|-- effects ( will hold all the effects that will be used to handle the side effects in the app)
+| 	|-- module-name.state.ts ( The store initialisation of the feature will be defined here)
+|   |-- module-name.selector.ts ( Will have all the functions that will return specific portions of the state )
+```
+
+
+## Additional references / Tips
+### Typescript Configuration
+
+We should go for stricter configuration regarding the use of Typescript
+We should avoid types that are too permissive
+Flags that should be put in the TS compiler configuration:
+{  
+  "forceConsistentCasingInFileNames": true,  
+  "noImplicitReturns": true,  
+  "strict": true,  
+  "noUnusedLocals": true,  
+}
