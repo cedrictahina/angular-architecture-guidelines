@@ -3,7 +3,6 @@
 <img width="40" valign="bottom" src="https://angular.io/assets/images/logos/angular/angular.svg">
 Angular Architecture Guidelines
 </h1>
-<p align="center">A cohesive guidelines for building Angular applications</p>
 
 # Overview
 Architecture should be the most important aspect of an application. 
